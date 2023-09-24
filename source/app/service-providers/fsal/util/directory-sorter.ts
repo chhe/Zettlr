@@ -23,7 +23,7 @@ export interface RequiredSortingProps {
 type SortingType = 'name-up'|'name-down'|'time-up'|'time-down'
 type FilenameDisplay = 'filename'|'title'|'heading'|'title+heading'
 
-export type GenericSorter = <T extends RequiredSortingProps>(arr: T[], type?: SortingType) => T[]
+export type GenericSorter = <T extends RequiredSortingProps>(arr: T[], type?: SortingType, applySortToDirs?: boolean) => T[]
 
 /**
  * Helper function to sort files by modification or creation time
@@ -175,7 +175,7 @@ export function getSorter (
   appLang: string,
   whichTime: 'modtime'|'creationtime'
 ): GenericSorter {
-  return function sort <T extends RequiredSortingProps> (arr: T[], type: SortingType = 'name-up'): T[] {
+  return function sort <T extends RequiredSortingProps> (arr: T[], type: SortingType = 'name-up', applySortToDirs: boolean = false): T[] {
     // First split the array based on type
     const f: T[] = []
     const d: T[] = []
@@ -200,8 +200,25 @@ export function getSorter (
       }
     }
 
-    // Sort the directories (always based on name)
-    d.sort(sortingFunc)
+    // Sort the directories
+    if (applySortToDirs) {
+      switch (type) {
+        case 'name-up':
+          d.sort(sortingFunc)
+          break
+        case 'name-down':
+          d.sort(sortingFunc).reverse()
+          break
+        case 'time-up':
+          d.sort(getDateSorter(whichTime))
+          break
+        case 'time-down':
+          d.sort(getDateSorter(whichTime)).reverse()
+          break
+      }
+    } else {
+      d.sort(sortingFunc)
+    }
 
     // Now sort the files according to the type of sorting
     switch (type) {
