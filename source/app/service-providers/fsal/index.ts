@@ -196,9 +196,9 @@ export default class FSAL extends ProviderContract {
   }
 
   // TODO/DEBUG: MOVE TO WORKSPACES PROVIDER OR ROOT
-  public async sortDirectory (src: DirDescriptor, sorting?: SortMethod): Promise<void> {
+  public async sortDirectory (src: DirDescriptor, sorting?: SortMethod, applySortToDirs?: false): Promise<void> {
     const sorter = this.getDirectorySorter()
-    await FSALDir.sort(src, sorter, sorting)
+    await FSALDir.sort(src, sorter, sorting, applySortToDirs)
   }
 
   /**

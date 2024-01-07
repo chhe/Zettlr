@@ -45,6 +45,7 @@ export interface DirDescriptor extends FSMetaInfo {
   // .ztr-directory file, since they are not bound to the directory.
   settings: {
     sorting: SortMethod
+    applySortToDirs: boolean
     icon: string|null
     project: ProjectSettings|null
   }

@@ -24,7 +24,7 @@ import { type GenericSorter } from '@providers/fsal/util/directory-sorter'
  * @param   {GenericSorter}  sorter         The sorter.
  */
 export function sortDirectory (dirDescriptor: DirDescriptor, sorter: GenericSorter): void {
-  dirDescriptor.children = sorter(dirDescriptor.children, dirDescriptor.settings.sorting)
+  dirDescriptor.children = sorter(dirDescriptor.children, dirDescriptor.settings.sorting, dirDescriptor.settings.applySortToDirs)
   for (const child of dirDescriptor.children) {
     if (child.type === 'directory') {
       sortDirectory(child, sorter)

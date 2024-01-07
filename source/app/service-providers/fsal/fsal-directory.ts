@@ -39,6 +39,7 @@ import type LogProvider from '@providers/log'
  */
 const SETTINGS_TEMPLATE = {
   sorting: 'name-up' as SortMethod,
+  applySortToDirs: false,
   project: null as ProjectSettings|null, // Default: no project
   icon: null as null|string // Default: no icon
 }
@@ -69,9 +70,9 @@ const PROJECT_TEMPLATE: ProjectSettings = {
  */
 function sortChildren (
   dir: DirDescriptor,
-  sorter: (arr: AnyDescriptor[], sortingType?: SortMethod) => AnyDescriptor[]
+  sorter: (arr: AnyDescriptor[], sortingType?: SortMethod, applySortToDirs?: boolean) => AnyDescriptor[]
 ): void {
-  dir.children = sorter(dir.children, dir.settings.sorting)
+  dir.children = sorter(dir.children, dir.settings.sorting, dir.settings.applySortToDirs)
 }
 
 /**
@@ -276,8 +277,9 @@ export async function setSetting (dirObject: DirDescriptor, settings: Partial<Di
  */
 export async function sort (
   dirObject: DirDescriptor,
-  sorter: (arr: AnyDescriptor[], sortingType?: SortMethod) => AnyDescriptor[],
-  method?: SortMethod
+  sorter: (arr: AnyDescriptor[], sortingType?: SortMethod, applySortToDirs?: boolean) => AnyDescriptor[],
+  method?: SortMethod,
+  applySortToDirs: boolean = false
 ): Promise<void> {
   // If the caller omits the method, it should remain unchanged
   if (method === undefined) {
@@ -285,6 +287,7 @@ export async function sort (
   }
 
   dirObject.settings.sorting = method
+  dirObject.settings.applySortToDirs = applySortToDirs
   // Persist the settings to disk
   await persistSettings(dirObject)
   sortChildren(dirObject, sorter)

@@ -41,6 +41,11 @@
         down: 'descending'
       }"
     ></SelectControl>
+		<SwitchControl
+      v-model="applySortToDirs"
+      v-bind:inline="true"
+      v-bind:label="'apply sorting to directories'"
+    ></SwitchControl>
     <hr>
     <!-- Project options -->
     <SwitchControl
@@ -188,6 +193,7 @@ const emit = defineEmits<(e: 'close') => void>()
 
 const sortingType = ref<'name'|'time'>('name')
 const sortingDirection = ref<'up'|'down'>('up')
+const applySortToDirs = ref<boolean>(props.directory.settings.applySortToDirs)
 const isProject = ref<boolean>(props.directory.settings.project !== null)
 
 const creationTime = computed(() => {
@@ -217,6 +223,7 @@ const formattedWordCount = computed(() => {
 
 watch(sortingType, updateSorting)
 watch(sortingDirection, updateSorting)
+watch(applySortToDirs, updateSorting)
 watch(isProject, updateProject)
 watch(toRef(props, 'directory'), () => {
   setSorting()
@@ -232,6 +239,7 @@ function setSorting (): void {
   const [ type, direction ] = props.directory.settings.sorting.split('-') as ['name'|'time', 'up'|'down']
   sortingType.value = type
   sortingDirection.value = direction
+  applySortToDirs.value = props.directory.settings.applySortToDirs
 }
 
 function openProjectPreferences (): void {
@@ -259,7 +267,8 @@ function updateSorting (): void {
     command: 'dir-sort',
     payload: {
       path: props.directory.path,
-      sorting: `${sortingType.value}-${sortingDirection.value}`
+      sorting: `${sortingType.value}-${sortingDirection.value}`,
+      applySortToDirs: applySortToDirs.value
     }
   })
     .catch(e => console.error(e))
